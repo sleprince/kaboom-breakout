@@ -210,21 +210,19 @@ scene("game", ({ levelIndex, score, lives }) => {
     const updateInterval = 100; // milliseconds
 
     // mouse controls
-    timer(updateInterval, () => {
-        const mousePos = screenPos();
-        const gamePos = toGamePos(mousePos);
+    onUpdate(() => {
+
+       // debug.log(mousePos().x);
+
         if (
-            gamePos.x < paddle.pos.x + paddle.width &&
-            gamePos.y > 0 &&
-            gamePos.y < height()
-        ) {
-            if (gamePos.x < paddle.pos.x) {
-                // left
-                paddle.move(-paddle.speed, 0);
-            } else if (gamePos.x > paddle.pos.x) {
-                // right
-                paddle.move(paddle.speed, 0);
-            }
+            mousePos().x > 0 &&
+            mousePos().x < width() &&
+            mousePos().y > 0 &&
+            mousePos().y < height()
+        )
+
+        {
+                paddle.pos.x = mousePos().x;
         }
     });
 
