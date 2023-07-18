@@ -1,8 +1,5 @@
-import kaboom from "kaboom"
-
-const FLOOR_HEIGHT = 48;
-let JUMP_FORCE = 800;
-const SPEED = 480;
+import kaboom from "kaboom";
+//import { createLevel } from "kaboom";
 
 // initialize context
 kaboom({
@@ -58,15 +55,88 @@ loadSpriteAtlas("sprites/breakout_pieces.png", {
 });
 
 //add custom font
-loadFont("breakout", "sprites/breakout_font.png", 6, 8, {
-    chars: "ABCDEFGHIJKLMNOPQRSTUVWXYZ  0123456789:!'",
-});
+//loadFont("breakout", "sprites/breakout_font.png", 6, 8, {
+//    chars: "ABCDEFGHIJKLMNOPQRSTUVWXYZ  0123456789:!'",
+//});
 
 //add sounds
 loadSound("blockbreak", "sounds/Explosion5.ogg");
 loadSound("paddlehit", "sounds/Powerup20.ogg");
 loadSound("powerup", "sounds/Powerup2.ogg");
 loadSound("ArcadeOddities", "sounds/Arcade-Oddities.mp3");
+
+//json levelopt defines all gameobjects, needs to occur before level defined
+const LEVELOPT = {
+    //NB used to be width and height on previous kaboom version
+    tileWidth: 32,
+    tileHeight: 16,
+    //tiles: was missing in tutorial which caused fundamental problem
+    tiles: {
+        a: () => [
+            // block
+            sprite("blocka"),
+            area(),
+            "block",
+            "bouncy",
+            {
+                points: 1,
+            },
+        ],
+        b: () => [
+            // block
+            sprite("blockb"),
+            area(),
+            "block",
+            "bouncy",
+            {
+                points: 2,
+            },
+        ],
+        c: () => [
+            // block
+            sprite("blockc"),
+            area(),
+            "block",
+            "bouncy",
+            {
+                points: 4,
+            },
+        ],
+        d: () => [
+            // block
+            sprite("blockd"),
+            area(),
+            "block",
+            "bouncy",
+            {
+                points: 8,
+            },
+        ],
+        e: () => [
+            // paddle
+            sprite("paddle"),
+            area(),
+            anchor("center"),
+            "paddle",
+            "bouncy",
+            {
+                speed: 400,
+            },
+        ],
+        f: () => [
+            // ball
+            sprite("ball"),
+            color(WHITE),
+            area(),
+            anchor("center"),
+            "ball",
+            {
+                hspeed: 100,
+                vspeed: 50,
+            },
+        ],
+    }
+};
 
 //ascii create levels
 const LEVELS = [
@@ -80,7 +150,7 @@ const LEVELS = [
         "                        ",
         "                        ",
         "                        ",
-        "            .           ",
+        "            f           ",
         "                        ",
         "                        ",
         "                        ",
@@ -93,7 +163,7 @@ const LEVELS = [
         "                        ",
         "                        ",
         "                        ",
-        "            @           ",
+        "            e           ",
     ],
     [
         " aaaaaaaaaaaaaaaaaaaaaa ",
@@ -108,7 +178,7 @@ const LEVELS = [
         " a                    a ",
         " aaaaaaaaaaaaaaaaaaaaaa ",
         "                        ",
-        "            .           ",
+        "            f           ",
         "                        ",
         "                        ",
         "                        ",
@@ -117,82 +187,19 @@ const LEVELS = [
         "                        ",
         "                        ",
         "                        ",
-        "                        ",
-        "            @           ",
+        "            e           ",
     ],
 ];
 
-//json levelopt defines all gameobjects
-const LEVELOPT = {
-    width: 32,
-    height: 16,
-    a: () => [
-        // block
-        sprite("blocka"),
-        area(),
-        "block",
-        "bouncy",
-        {
-            points: 1,
-        },
-    ],
-    b: () => [
-        // block
-        sprite("blockb"),
-        area(),
-        "block",
-        "bouncy",
-        {
-            points: 2,
-        },
-    ],
-    c: () => [
-        // block
-        sprite("blockc"),
-        area(),
-        "block",
-        "bouncy",
-        {
-            points: 4,
-        },
-    ],
-    d: () => [
-        // block
-        sprite("blockd"),
-        area(),
-        "block",
-        "bouncy",
-        {
-            points: 8,
-        },
-    ],
-    "@": () => [
-        // paddle
-        sprite("paddle"),
-        area(),
-        origin("center"),
-        "paddle",
-        "bouncy",
-        {
-            speed: 400,
-        },
-    ],
-    ".": () => [
-        // ball
-        sprite("ball"),
-        color(WHITE),
-        area(),
-        origin("center"),
-        "ball",
-        {
-            hspeed: 100,
-            vspeed: 50,
-        },
-    ],
-};
 
 scene("game", ({ levelIndex, score, lives }) => {
+
+    //used to be add level
     addLevel(LEVELS[levelIndex], LEVELOPT);
+
+    
+
+
 });
 
 // start game on first level
@@ -205,4 +212,5 @@ function start() {
 }
 
 start();
+
 
