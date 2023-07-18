@@ -112,20 +112,18 @@ const LEVELOPT = {
                 points: 8,
             },
         ],
-        e: () => [
+        "@": () => [
             // paddle
             sprite("paddle"),
             area(),
-            pos(width() * 0.5, height() - 50),
             anchor("center"),
-            body({ isSolid: true }),
             "paddle",
             "bouncy",
             {
                 speed: 400,
             },
         ],
-        f: () => [
+        ".": () => [
             // ball
             sprite("ball"),
             color(WHITE),
@@ -152,7 +150,7 @@ const LEVELS = [
         "                        ",
         "                        ",
         "                        ",
-        "            f           ",
+        "            .           ",
         "                        ",
         "                        ",
         "                        ",
@@ -165,7 +163,7 @@ const LEVELS = [
         "                        ",
         "                        ",
         "                        ",
-        "            e           ",
+        "            @           ",
     ],
     [
         " aaaaaaaaaaaaaaaaaaaaaa ",
@@ -180,7 +178,7 @@ const LEVELS = [
         " a                    a ",
         " aaaaaaaaaaaaaaaaaaaaaa ",
         "                        ",
-        "            f           ",
+        "            .           ",
         "                        ",
         "                        ",
         "                        ",
@@ -189,7 +187,7 @@ const LEVELS = [
         "                        ",
         "                        ",
         "                        ",
-        "            e           ",
+        "            @           ",
     ],
 ];
 
@@ -199,18 +197,10 @@ scene("game", ({ levelIndex, score, lives }) => {
     //used to be add level
     addLevel(LEVELS[levelIndex], LEVELOPT);
 
-    const paddle = add([
-        'paddle',
-        rect(100, 25),
-        pos(width() * 0.5, height() - 50),
-        anchor('center'),
-        area(),
-    ])
 
-    const updateInterval = 100; // milliseconds
 
     // mouse controls
-    onUpdate(() => {
+    onUpdate("paddle", (paddle) => {
 
        // debug.log(mousePos().x);
 
@@ -224,6 +214,12 @@ scene("game", ({ levelIndex, score, lives }) => {
         {
                 paddle.pos.x = mousePos().x;
         }
+    });
+
+
+    // ball movement
+    onUpdate("ball", (ball) => {
+        ball.move(ball.hspeed, ball.vspeed);
     });
 
 });
