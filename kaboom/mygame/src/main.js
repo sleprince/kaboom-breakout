@@ -253,9 +253,9 @@ scene("game", ({ levelIndex, score, lives }) => {
         score += block.points;
         play("blockbreak"); // play sound
 
-        //debug.log(get("block").length);
+        //in this version of kaboom get("block").length no longer works
         const blockNum = get("block");
-        debug.log(blockNum);
+        //debug.log(blockNum);
 
         // level end
         if (blockNum === 0) {
@@ -270,6 +270,40 @@ scene("game", ({ levelIndex, score, lives }) => {
                 // win
                 go("win", { score: score });
             }
+        }
+
+        // powerups
+        if (chance(0.05)) {
+            // extra life
+            add([
+                sprite("heart"),
+                pos(block.pos),
+                area(),
+                anchor("center"),
+                offscreen({ destroy: true }),
+                "powerup",
+                {
+                    speed: 80,
+                    effect() {
+                        lives++;
+                    },
+                },
+            ]);
+        }
+    });
+
+    // powerups
+    onUpdate("powerup", (powerup) => {
+        powerup.move(0, powerup.speed);
+    });
+
+    // powerup collision with paddle
+    onCollide("powerup", "bouncy", (powerup, bouncy) => {
+
+        if (bouncy.is("paddle")) {
+            powerup.effect();
+            powerup.destroy();
+            play("powerup");
         }
     });
 
@@ -353,6 +387,13 @@ function start() {
         lives: 3,
     });
 }
+
+// play music
+const music = play("ArcadeOddities", {
+    volume: 0.8,
+    loop: true
+})
+
 
 start();
 
