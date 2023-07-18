@@ -54,10 +54,10 @@ loadSpriteAtlas("sprites/breakout_pieces.png", {
     },
 });
 
-//add custom font
-//loadFont("breakout", "sprites/breakout_font.png", 6, 8, {
-//    chars: "ABCDEFGHIJKLMNOPQRSTUVWXYZ  0123456789:!'",
-//});
+//add custom font, is loadBitmapFont on new version of kaboom
+loadBitmapFont("breakout", "sprites/breakout_font.png", 6, 8, {
+    chars: "ABCDEFGHIJKLMNOPQRSTUVWXYZ  0123456789:!'",
+});
 
 //add sounds
 loadSound("blockbreak", "sounds/Explosion5.ogg");
@@ -197,21 +197,15 @@ scene("game", ({ levelIndex, score, lives }) => {
     //used to be add level
     addLevel(LEVELS[levelIndex], LEVELOPT);
 
-
-
     // mouse controls
     onUpdate("paddle", (paddle) => {
-
-       // debug.log(mousePos().x);
-
         if (
             mousePos().x > 0 &&
             mousePos().x < width() &&
             mousePos().y > 0 &&
             mousePos().y < height()
-        )
-
-        {
+        ) {
+            //is paddle.pos.x not worldArea() in new version
                 paddle.pos.x = mousePos().x;
         }
     });
@@ -219,9 +213,134 @@ scene("game", ({ levelIndex, score, lives }) => {
 
     // ball movement
     onUpdate("ball", (ball) => {
+        // bounce off screen edges
+        if (ball.pos.x < 0 || ball.pos.x > width()) {
+            ball.hspeed = -ball.hspeed;
+        }
+
+        if (ball.pos.y < 0) {
+            ball.vspeed = -ball.vspeed;
+        }
+
+        // fall off screen
+        if (ball.pos.y > height()) {
+            lives -= 1;
+            if (lives <= 0) {
+                go("lose", { score: score });
+            } else {
+                ball.pos.x = width() / 2;
+                ball.pos.y = height() / 2;
+            }
+        }
+
+        // move
         ball.move(ball.hspeed, ball.vspeed);
     });
 
+    // collision with paddle
+    onCollide("ball", "bouncy", (ball, bouncy) => {
+        ball.vspeed = -ball.vspeed;
+
+        if (bouncy.is("paddle")) {
+            // play sound
+            play("paddlehit");
+        }
+    });
+
+    // collision with block
+    onCollide("ball", "block", (ball, block) => {
+        block.destroy();
+        score += block.points;
+        play("blockbreak"); // play sound
+
+        //debug.log(get("block").length);
+        const blockNum = get("block");
+        debug.log(blockNum);
+
+        // level end
+        if (blockNum === 0) {
+            // next level
+            if (levelIndex < LEVELS.length) {
+                go("game", {
+                    levelIndex: levelIndex + 1,
+                    score: score,
+                    lives: lives,
+                });
+            } else {
+                // win
+                go("win", { score: score });
+            }
+        }
+    });
+
+
+    // ui
+    onDraw(() => {
+        drawText({
+            text: `SCORE: ${score}`,
+            size: 16,
+            pos: vec2(8, 8),
+            font: "breakout",
+            color: WHITE,
+        });
+        drawText({
+            text: `LIVES: ${lives}`,
+            size: 16,
+            pos: vec2((width() * 13) / 16, 8),
+            font: "breakout",
+            color: WHITE,
+        });
+    });
+
+});
+
+
+// gameover screens
+scene("lose", ({ score }) => {
+    add([
+        text(`GAME OVER\n\nYOUR FINAL SCORE WAS ${score}`, {
+            size: 32,
+            width: width(),
+            font: "breakout",
+        }),
+        pos(12),
+    ]);
+
+    add([
+        text(`PRESS ANY KEY TO RESTART`, {
+            size: 16,
+            width: width(),
+            font: "breakout",
+        }),
+        pos(width() / 2, height() * (3 / 4)),
+    ]);
+
+    onKeyPress(start);
+    onMousePress(start);
+});
+
+//win screens
+scene("win", ({ score }) => {
+    add([
+        text(`CONGRATULATIONS, YOU WIN!\n\nYOUR FINAL SCORE WAS ${score}`, {
+            size: 32,
+            width: width(),
+            font: "breakout",
+        }),
+        pos(width() / 2, height() / 2),
+    ]);
+
+    add([
+        text(`PRESS ANY KEY TO RESTART`, {
+            size: 16,
+            width: width(),
+            font: "breakout",
+        }),
+        pos(width() / 2, height() * (3 / 4)),
+    ]);
+
+    onKeyPress(start);
+    onMousePress(start);
 });
     
 
