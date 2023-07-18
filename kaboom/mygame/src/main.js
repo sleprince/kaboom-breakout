@@ -116,7 +116,9 @@ const LEVELOPT = {
             // paddle
             sprite("paddle"),
             area(),
+            pos(width() * 0.5, height() - 50),
             anchor("center"),
+            body({ isSolid: true }),
             "paddle",
             "bouncy",
             {
@@ -197,10 +199,38 @@ scene("game", ({ levelIndex, score, lives }) => {
     //used to be add level
     addLevel(LEVELS[levelIndex], LEVELOPT);
 
-    
+    const paddle = add([
+        'paddle',
+        rect(100, 25),
+        pos(width() * 0.5, height() - 50),
+        anchor('center'),
+        area(),
+    ])
 
+    const updateInterval = 100; // milliseconds
+
+    // mouse controls
+    timer(updateInterval, () => {
+        const mousePos = screenPos();
+        const gamePos = toGamePos(mousePos);
+        if (
+            gamePos.x < paddle.pos.x + paddle.width &&
+            gamePos.y > 0 &&
+            gamePos.y < height()
+        ) {
+            if (gamePos.x < paddle.pos.x) {
+                // left
+                paddle.move(-paddle.speed, 0);
+            } else if (gamePos.x > paddle.pos.x) {
+                // right
+                paddle.move(paddle.speed, 0);
+            }
+        }
+    });
 
 });
+    
+
 
 // start game on first level
 function start() {
