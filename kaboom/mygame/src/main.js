@@ -196,6 +196,9 @@ scene("game", ({ levelIndex, score, lives, blocks }) => {
     //used to be add level
     addLevel(LEVELS[levelIndex], LEVELOPT);
 
+    //initialise number of blocks at start of level
+    blocks = get("block", { recursive: true }).length + 1;
+
     // mouse controls
     onUpdate("paddle", (paddle) => {
         if (
