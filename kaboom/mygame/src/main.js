@@ -1,7 +1,6 @@
 import kaboom from "kaboom";
-//import { createLevel } from "kaboom";
 
-// initialize context
+// initialize context, set canvas size
 kaboom({
     width: 768,
     height: 360,
@@ -131,8 +130,8 @@ const LEVELOPT = {
             anchor("center"),
             "ball",
             {
-                hspeed: 100,
-                vspeed: 50,
+                hspeed: 300,
+                vspeed: 150,
             },
         ],
     }
@@ -192,7 +191,7 @@ const LEVELS = [
 ];
 
 
-scene("game", ({ levelIndex, score, lives }) => {
+scene("game", ({ levelIndex, score, lives, blocks }) => {
 
     //used to be add level
     addLevel(LEVELS[levelIndex], LEVELOPT);
@@ -243,24 +242,36 @@ scene("game", ({ levelIndex, score, lives }) => {
 
         if (bouncy.is("paddle")) {
             // play sound
-            play("paddlehit");
+            play("paddlehit", {
+                volume: 0.3,
+                });
         }
     });
 
     // collision with block
     onCollide("ball", "block", (ball, block) => {
+
+        //in this version of kaboom get("block").length without specifying recursive no longer works
+        const blockNum = get("block", { recursive: true })
+
+
         block.destroy();
         score += block.points;
-        play("blockbreak"); // play sound
+        blocks = blockNum.length;
 
-        //in this version of kaboom get("block").length no longer works
-        const blockNum = get("block");
-        //debug.log(blockNum);
+        play("blockbreak", {
+            volume: 0.3,
+        });
+ 
+
+
+        //take out
+        debug.log(blockNum.length);
 
         // level end
-        if (blockNum === 0) {
+        if (blockNum.length === 1) {
             // next level
-            if (levelIndex < LEVELS.length) {
+            if (levelIndex != LEVELS.length - 1) {
                 go("game", {
                     levelIndex: levelIndex + 1,
                     score: score,
@@ -303,7 +314,10 @@ scene("game", ({ levelIndex, score, lives }) => {
         if (bouncy.is("paddle")) {
             powerup.effect();
             powerup.destroy();
-            play("powerup");
+            play("powerup", {
+                volume: 0.3,
+                });
+
         }
     });
 
@@ -324,6 +338,18 @@ scene("game", ({ levelIndex, score, lives }) => {
             font: "breakout",
             color: WHITE,
         });
+        drawText({
+            text: `BLOCKS: ${blocks - 1}`,
+            size: 16,
+            pos: vec2((width() * 5) / 16, 8),
+            font: "breakout",
+            color: WHITE,
+        });
+
+
+
+
+
     });
 
 });
@@ -385,12 +411,13 @@ function start() {
         levelIndex: 0,
         score: 0,
         lives: 3,
+        blocks: 0
     });
 }
 
 // play music
 const music = play("ArcadeOddities", {
-    volume: 0.8,
+    volume: 0.3,
     loop: true
 })
 
