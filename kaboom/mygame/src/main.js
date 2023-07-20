@@ -352,6 +352,30 @@ scene("game", ({ levelIndex, score, lives, blocks }) => {
 
 });
 
+// limbo screen
+scene("limbo", () => { 
+    add([
+        text(`BLOCK BREAKER`, {
+            size: 32,
+            width: width(),
+            font: "breakout",
+        }),
+        pos(12),
+    ]);
+
+    add([
+        text(`PRESS ANY KEY TO START`, {
+            size: 16,
+            width: width(),
+            font: "breakout",
+        }),
+        pos(width() / 2, height() * (3 / 4)),
+    ]);
+
+    onKeyPress(limbo);
+    onMousePress(limbo);
+});
+
 
 // gameover screens
 scene("lose", ({ score }) => {
@@ -402,9 +426,20 @@ scene("win", ({ score }) => {
 });
     
 
+function limbo() {
+    // play music
+    play("ArcadeOddities", {
+        volume: 0.05,
+        loop: true
+    })
+
+    start();
+    
+}
 
 // start game on first level
 function start() {
+
     go("game", {
         levelIndex: 0,
         score: 0,
@@ -413,13 +448,6 @@ function start() {
     });
 }
 
-// play music
-const music = play("ArcadeOddities", {
-    volume: 0.05,
-    loop: true
-})
-
-
-start();
+go("limbo");
 
 
