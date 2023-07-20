@@ -243,7 +243,7 @@ scene("game", ({ levelIndex, score, lives, blocks }) => {
         if (bouncy.is("paddle")) {
             // play sound
             play("paddlehit", {
-                volume: 0.3,
+                volume: 0.05,
                 });
         }
     });
@@ -260,13 +260,8 @@ scene("game", ({ levelIndex, score, lives, blocks }) => {
         blocks = blockNum.length;
 
         play("blockbreak", {
-            volume: 0.3,
+            volume: 0.05,
         });
- 
-
-
-        //take out
-        debug.log(blockNum.length);
 
         // level end
         if (blockNum.length === 1) {
@@ -315,7 +310,7 @@ scene("game", ({ levelIndex, score, lives, blocks }) => {
             powerup.effect();
             powerup.destroy();
             play("powerup", {
-                volume: 0.3,
+                volume: 0.05,
                 });
 
         }
@@ -417,7 +412,7 @@ function start() {
 
 // play music
 const music = play("ArcadeOddities", {
-    volume: 0.3,
+    volume: 0.05,
     loop: true
 })
 
