@@ -2,8 +2,8 @@ import kaboom from "kaboom";
 
 // initialize context, set canvas size
 kaboom({
-    width: 768,
-    height: 360,
+    width: 1280,
+    height: 720,
     background: [0, 0, 0],
 });
 
