@@ -203,53 +203,17 @@ scene("game", ({ levelIndex, score, lives, blocks }) => {
         // Get all objects in the scene with the tag "paddle"
         const paddles = get("paddle", { recursive: true });
 
-        // If there is only one paddle, return it
-        if (paddles.length === 1) {
+        //return the first paddle found
             return paddles[0];
-        } else {
-            // If there are multiple paddles, throw an error
-            return paddles[0];
-        }
+
     }
 
-    // Use the function to get the paddle and move it to the left
+    // Use the function to get the paddle and move it to the left to test it's working
     //const paddle = getPaddle();
     //paddle.pos.x -= 1000;
 
     // Declare a flag to track mouse control
     let isMouseControl = false;
-
-    let paddleMovingLeft = false;
-    let paddleMovingRight = false;
-
-    function updatePaddle(paddle) {
-
-        if (isKeyDown("left")) {
-            paddleMovingLeft = true;
-            paddleMovingRight = false;
-        } else if (isKeyDown("right")) {
-            paddleMovingRight = true;
-            paddleMovingLeft = false;
-        } else {
-            paddleMovingLeft = false;
-            paddleMovingRight = false;
-        }
-
-        if (!isMouseControl && paddle.pos.x > 0 && paddleMovingLeft) {
-            isMouseControl = false;
-            paddle.pos.x -= 8;
-        }
-
-        if (!isMouseControl && paddle.pos.x < width() && paddleMovingRight) {
-            isMouseControl = false;
-            paddle.pos.x += 8;
-        }
-
-
-    }
-
-
-
 
     // mouse controls
     onUpdate("paddle", (paddle) => {
@@ -262,10 +226,7 @@ scene("game", ({ levelIndex, score, lives, blocks }) => {
             ) {
                 paddle.pos.x = mousePos().x;
             }
-        } else {
-            // Keyboard control
-            updatePaddle(paddle); // Move with keyboard controls
-        }
+        } 
     });
 
     // Mouse move event to enable mouse control
@@ -273,14 +234,24 @@ scene("game", ({ levelIndex, score, lives, blocks }) => {
         isMouseControl = true;
     });
 
+    const paddle = getPaddle();
+
     // left key pressed event to disable mouse control
-    onKeyPress("left", () => {
+    onKeyDown("left", () => {
         isMouseControl = false;
+
+        if (paddle.pos.x > 0) {
+            paddle.pos.x -= 8;
+        }
     });
 
     // right key pressed event to disable mouse control
-    onKeyPress("right", () => {
+    onKeyDown("right", () => {
         isMouseControl = false;
+
+        if (paddle.pos.x < width()) {
+            paddle.pos.x += 8;
+        }
     });
 
 
