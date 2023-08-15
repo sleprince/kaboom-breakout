@@ -2,8 +2,8 @@ import kaboom from "kaboom";
 
 // initialize context, set canvas size
 kaboom({
-    width: 1280,
-    height: 720,
+    width: 768,
+    height: 360,
     background: [0, 0, 0],
 });
 
@@ -199,17 +199,88 @@ scene("game", ({ levelIndex, score, lives, blocks }) => {
     //initialise number of blocks at start of level
     blocks = get("block", { recursive: true }).length + 1;
 
+    function getPaddle() {
+        // Get all objects in the scene with the tag "paddle"
+        const paddles = get("paddle", { recursive: true });
+
+        // If there is only one paddle, return it
+        if (paddles.length === 1) {
+            return paddles[0];
+        } else {
+            // If there are multiple paddles, throw an error
+            return paddles[0];
+        }
+    }
+
+    // Use the function to get the paddle and move it to the left
+    //const paddle = getPaddle();
+    //paddle.pos.x -= 1000;
+
+    // Declare a flag to track mouse control
+    let isMouseControl = false;
+
+    let paddleMovingLeft = false;
+    let paddleMovingRight = false;
+
+    function updatePaddle(paddle) {
+
+        if (isKeyDown("left")) {
+            paddleMovingLeft = true;
+            paddleMovingRight = false;
+        } else if (isKeyDown("right")) {
+            paddleMovingRight = true;
+            paddleMovingLeft = false;
+        } else {
+            paddleMovingLeft = false;
+            paddleMovingRight = false;
+        }
+
+        if (!isMouseControl && paddle.pos.x > 0 && paddleMovingLeft) {
+            isMouseControl = false;
+            paddle.pos.x -= 8;
+        }
+
+        if (!isMouseControl && paddle.pos.x < width() && paddleMovingRight) {
+            isMouseControl = false;
+            paddle.pos.x += 8;
+        }
+
+
+    }
+
+
+
+
     // mouse controls
     onUpdate("paddle", (paddle) => {
-        if (
-            mousePos().x > 0 &&
-            mousePos().x < width() &&
-            mousePos().y > 0 &&
-            mousePos().y < height()
-        ) {
-            //is paddle.pos.x not worldArea() in new version
+        if (isMouseControl) {
+            if (
+                mousePos().x > 0 &&
+                mousePos().x < width() &&
+                mousePos().y > 0 &&
+                mousePos().y < height()
+            ) {
                 paddle.pos.x = mousePos().x;
+            }
+        } else {
+            // Keyboard control
+            updatePaddle(paddle); // Move with keyboard controls
         }
+    });
+
+    // Mouse move event to enable mouse control
+    onMouseMove(() => {
+        isMouseControl = true;
+    });
+
+    // left key pressed event to disable mouse control
+    onKeyPress("left", () => {
+        isMouseControl = false;
+    });
+
+    // right key pressed event to disable mouse control
+    onKeyPress("right", () => {
+        isMouseControl = false;
     });
 
 
